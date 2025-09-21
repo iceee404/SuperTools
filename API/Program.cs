@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Persistence;
+using Application.Core;
+using Application.Printers.Queries;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,8 +18,18 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddCors();
+builder.Services.AddMediatR(x =>
+    x.RegisterServicesFromAssembly(typeof(GetPrinterList.Handler).Assembly));
+
+// 配置auto mapper  
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
+    .WithOrigins("http://localhost:5173", "https://localhost:5173"));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

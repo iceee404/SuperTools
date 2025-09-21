@@ -19,7 +19,10 @@ public class Printer
     public required string Specification { get; set; }
     // location id (foreign key)
     public required string LocationID { get; set; }
-    
+
+    // 打印机状态：正常、故障、维修中、停用
+    public required string Status { get; set; }
+
     // notes
     public string? Notes { get; set; }
     // warranty expiry date
@@ -30,5 +33,6 @@ public class Printer
 
     // navigation property
     public Location Location { get; set; } = null!;
+    public ICollection<TransferLog> TransferLogs { get; set; } = [];
 
 }

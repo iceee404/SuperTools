@@ -1,56 +1,57 @@
 using System;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Persistence;
-
+using Application.Printers.Queries;
+using Application.Printers.Commands;
+using Application.Core;
+using MediatR;
 namespace API.Controllers;
 
-public class PrinterController(AppDbContext context) : BaseApiController
+
+public class PrinterController : BaseApiController
 {
     // GET /api/Printer
     [HttpGet]
     public async Task<ActionResult<List<Printer>>> GetPrinters(
         [FromQuery] string? brand = null,
-        [FromQuery] string? location = null)
+        [FromQuery] string? location = null,
+        [FromQuery] string? status = null,
+        [FromQuery] string? locationType = null)
     {
-        var query = context.Printers.AsQueryable();
-        
-        if (!string.IsNullOrEmpty(brand))
-            query = query.Where(p => p.Brand.Contains(brand));
-            
-        if (!string.IsNullOrEmpty(location))
-            query = query.Where(p => p.Location.LocationName.Contains(location));
-            
-        return await query.Include(p => p.Location).ToListAsync();
+        return await Mediator.Send(new GetPrinterList.Query());
     }
 
     // GET /api/Printer/{id}
     [HttpGet("{id}")]
     public async Task<ActionResult<Printer>> GetPrinter(string id)
     {
-        var printer = await context.Printers
-            .Include(p => p.Location)
-            .FirstOrDefaultAsync(p => p.Id == id);
+        return await Mediator.Send(new GetPrinterDetails.Query { Id = id });
 
-        if (printer == null) return NotFound();
 
-        return printer;
     }
-    
-    // GET /api/Printer/{id}/transfers
-    [HttpGet("{id}/transfers")]
-    public async Task<ActionResult<List<TransferLog>>> GetTransfers(string id)
+
+    // POST /api/Printer
+    [HttpPost]
+    public async Task<ActionResult<string>> CreatePrinter([FromBody] Printer printer)
     {
-        var transfers = await context.TransferLog
-            .Where(t => t.PrinterID == id)
-            .Include(t => t.Printer)
-            .Include(t => t.FromLocation)
-            .Include(t => t.ToLocation)
-            .OrderByDescending(t => t.TransferDate)
-            .ToListAsync();
-            
-        return transfers;
+        return await Mediator.Send(new CreatePrinter.Command { Printer = printer });
     }
-    
+
+    // PUT /api/Printer/{id}
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdatePrinter(string id, [FromBody] Printer printer)
+    {
+        printer.Id = id;
+        await Mediator.Send(new EditPrinter.Command { Printer = printer });
+        return Ok();
+    }
+
+    // DELETE /api/Printer/{id}
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeletePrinter(string id)
+    {
+        await Mediator.Send(new DeletePrinter.Command { Id = id });
+        return Ok();
+    }
 }

@@ -33,50 +33,54 @@ public class DbInitializer
 
             var printers = new List<Printer>
             {
-                new() 
-                { 
-                    Brand = "HP", 
-                    ModelType = "LaserJet Pro M404dn", 
-                    TonerModel = "HP 58A", 
-                    SerialNumber = "HP001234567890", 
+                new()
+                {
+                    Brand = "HP",
+                    ModelType = "LaserJet Pro M404dn",
+                    TonerModel = "HP 58A",
+                    SerialNumber = "HP001234567890",
                     Specification = "A4激光打印机",
                     LocationID = headquartersId,
+                    Status = "正常",
                     PurchaseDate = DateTime.Now.AddMonths(-6),
                     WarrantyExpiryDate = DateTime.Now.AddYears(2),
                     Notes = "总部主要打印设备"
                 },
-                new() 
-                { 
-                    Brand = "Epson", 
-                    ModelType = "LQ-630K", 
-                    TonerModel = "Epson S015290", 
-                    SerialNumber = "EP001234567890", 
+                new()
+                {
+                    Brand = "Epson",
+                    ModelType = "LQ-630K",
+                    TonerModel = "Epson S015290",
+                    SerialNumber = "EP001234567890",
                     Specification = "A5针式打印机",
                     LocationID = store1Id,
+                    Status = "正常",
                     PurchaseDate = DateTime.Now.AddMonths(-3),
                     WarrantyExpiryDate = DateTime.Now.AddYears(1),
                     Notes = "城西药店收据打印机"
                 },
-                new() 
-                { 
-                    Brand = "Canon", 
-                    ModelType = "PIXMA G3800", 
-                    TonerModel = "Canon GI-490", 
-                    SerialNumber = "CN001234567890", 
+                new()
+                {
+                    Brand = "Canon",
+                    ModelType = "PIXMA G3800",
+                    TonerModel = "Canon GI-490",
+                    SerialNumber = "CN001234567890",
                     Specification = "A4彩色喷墨一体机",
                     LocationID = store2Id,
+                    Status = "维修中",
                     PurchaseDate = DateTime.Now.AddMonths(-4),
                     WarrantyExpiryDate = DateTime.Now.AddYears(1),
                     Notes = "城东药店多功能打印设备"
                 },
-                new() 
-                { 
-                    Brand = "Brother", 
-                    ModelType = "MFC-L2715DW", 
-                    TonerModel = "Brother TN-2325", 
-                    SerialNumber = "BR001234567890", 
+                new()
+                {
+                    Brand = "Brother",
+                    ModelType = "MFC-L2715DW",
+                    TonerModel = "Brother TN-2325",
+                    SerialNumber = "BR001234567890",
                     Specification = "A4激光一体机",
                     LocationID = store3Id,
+                    Status = "正常",
                     PurchaseDate = DateTime.Now.AddMonths(-2),
                     WarrantyExpiryDate = DateTime.Now.AddYears(3),
                     Notes = "城南药店激光一体机"
@@ -106,6 +110,7 @@ public class DbInitializer
                     ToLocationID = printer.LocationID,
                     TransferDate = printer.PurchaseDate ?? DateTime.Now.AddDays(-30),
                     TransferredBy = "系统管理员",
+                    TransferReason = "库存补充",
                     Notes = $"初始分配 - {printer.Brand} {printer.ModelType} 分配到 {printer.Location?.LocationName}"
                 });
             }
@@ -123,6 +128,7 @@ public class DbInitializer
                     ToLocationID = store2Id,
                     TransferDate = DateTime.Now.AddDays(-15),
                     TransferredBy = "张经理",
+                    TransferReason = "门店调配",
                     Notes = "临时调配到城东药店支援"
                 });
             }
